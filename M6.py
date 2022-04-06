@@ -45,10 +45,20 @@ def runGame():
         elif len(guess) != len(realWord):
             print("Please only guess one letter at a time or the entire word")
             continue
-        elif guess == realWord:
+        else: 
+            if guess == realWord:
                 print("----------------------\nYou win. The word was " + realWord)
                 wins += 1
                 break
+            # if tried to guess entire word but failed, handle loss
+            numGuesses -= 1
+            print("Incorrect, remaining guesses: " + str(numGuesses))
+            print(answer)
+            print(f"Wins: {wins}  Losses: {losses} Guesses: {letters}")
+            if numGuesses == 0:
+                print("----------------------\nYou lose. the word was " + realWord)
+                losses += 1
+            continue
         # handle if guess not found in word 
         if remainWord.find(guess) == -1:
             numGuesses -= 1
