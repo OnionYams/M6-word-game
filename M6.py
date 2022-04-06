@@ -4,11 +4,12 @@ import random
 
 f = open("test_words.txt", "r")
 wordList = f.read().split()
-
+# globals for tracking multiple games
 usedWords = []
 wins = losses = 0
 playGame = True
 
+# run one instance of the game
 def runGame():
     # vars controlling the game
     numGuesses = 7
@@ -24,9 +25,12 @@ def runGame():
     for i in range(len(remainWord)):
         answer += "_"
     letters = []
+    # global to persist across games
+    global wins, losses
 
+    # game starts
     while (numGuesses > 0):
-        guess = str(input("Guess a letter: "))
+        guess = str(input("----------------------\nGuess a letter: "))
         # validate input
         if not guess.isalpha():
             print("Must enter a letter or word")
@@ -35,26 +39,39 @@ def runGame():
             print("Already guessed that")
             continue
         guess = guess.lower()
+        # only allow guessing 1 letter or entire word, any other length guess is invalid
+        if len(guess) == 1:
+            letters += guess
+        elif len(guess) != len(realWord):
+            print("Please only guess one letter at a time or the entire word")
+            continue
+        elif guess == realWord:
+                print("----------------------\nYou win. The word was " + realWord)
+                wins += 1
+                break
+        # handle if guess not found in word 
         if remainWord.find(guess) == -1:
             numGuesses -= 1
             print("Incorrect, remaining guesses: " + str(numGuesses))
+            print(answer)
+            print(f"Wins: {wins}  Losses: {losses} Guesses: {letters}")
             if numGuesses == 0:
-                print("You lose. the word was" + realWord)
-                global losses
+                print("----------------------\nYou lose. the word was " + realWord)
                 losses += 1
             continue
-        # essentially "moves" letter from a duplicate of the true word to the answer so find can be used for repeated letters and 
-        # doesn't always find the first match
+        # essentially "moves" letter from a duplicate of the true word to the answer so find can be used for repeated letters  
+        # and doesn't only find the first match
         while remainWord.find(guess) != -1:
-            answer = answer[:remainWord.find(guess)] + guess + answer[remainWord.find(guess)+1:]
-            remainWord = remainWord[:remainWord.find(guess)] + "_" + remainWord[remainWord.find(guess)+1:]
+            answer = answer[:remainWord.find(guess)] + guess + answer[remainWord.find(guess)+len(guess):]
+            remainWord = remainWord[:remainWord.find(guess)] + "_" + remainWord[remainWord.find(guess)+len(guess):]
+        print(answer)
+        print(f"Wins: {wins}  Losses: {losses} Guesses: {letters}")
         if answer == realWord:
-            print("You win. The word was " + realWord)
-            global wins 
+            print("----------------------\nYou win. The word was " + realWord)
             wins += 1
             break
-        print(answer)
 
+# play game again if desired
 while(playGame):
     runGame()
     print(f"Wins: {wins}  Losses: {losses}")
